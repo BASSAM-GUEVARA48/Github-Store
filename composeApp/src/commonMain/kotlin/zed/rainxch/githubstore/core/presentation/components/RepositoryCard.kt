@@ -125,9 +125,7 @@ fun RepositoryCard(
 
             GithubStoreButton(
                 text = "View Details",
-                onClick = {
-
-                },
+                onClick = onClick,
                 modifier = Modifier.fillMaxWidth()
             )
         }
