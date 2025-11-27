@@ -61,14 +61,14 @@ class DetailsRepositoryImpl(
     }
 
     override suspend fun getReadme(owner: String, repo: String): String? {
-        // Fetch README raw content. GitHub supports Accept header for raw content
-        // If not found (404), return null.
         return try {
-            github.get("/repos/$owner/$repo/readme") {
-                header(HttpHeaders.Accept, "application/vnd.github.raw")
-            }.body()
+            github.get("https://raw.githubusercontent.com/$owner/$repo/master/README.md").body()
         } catch (t: Throwable) {
-            null
+            try {
+                github.get("https://raw.githubusercontent.com/$owner/$repo/main/README.md").body()
+            } catch (e: Throwable) {
+                null
+            }
         }
     }
 
@@ -171,7 +171,14 @@ class DetailsRepositoryImpl(
             htmlUrl = author.htmlUrl
         ),
         publishedAt = publishedAt ?: createdAt ?: "",
-        description = body,
+        description = body
+            // 1. Replace the <details> and <summary> tags
+            ?.replace("<details>", "")
+            ?.replace("</details>", "")
+            ?.replace("<summary>", "")
+            ?.replace("</summary>", "")
+            // 2. Remove the trailing \r\n (Carriage Return + Line Feed) which can sometimes cause issues
+            ?.replace("\r\n", "\n"),
         assets = assets.map { it.toDomain() },
         tarballUrl = tarballUrl,
         zipballUrl = zipballUrl,
