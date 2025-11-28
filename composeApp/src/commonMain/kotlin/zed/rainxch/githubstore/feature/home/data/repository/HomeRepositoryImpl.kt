@@ -26,6 +26,8 @@ import zed.rainxch.githubstore.core.domain.model.GithubRepoSummary
 import zed.rainxch.githubstore.core.data.mappers.toSummary
 import zed.rainxch.githubstore.core.data.model.GithubRepoNetworkModel
 import zed.rainxch.githubstore.core.data.model.GithubRepoSearchResponse
+import zed.rainxch.githubstore.core.domain.Platform
+import zed.rainxch.githubstore.core.domain.model.PlatformType
 import zed.rainxch.githubstore.feature.home.domain.repository.HomeRepository
 import zed.rainxch.githubstore.feature.home.domain.repository.PaginatedRepos
 import kotlin.time.Clock
@@ -285,17 +287,4 @@ class HomeRepositoryImpl(
     private data class AssetNetworkModel(
         val name: String
     )
-}
-
-interface Platform {
-    val type: PlatformType
-}
-
-expect fun getPlatform(): Platform
-
-enum class PlatformType {
-    ANDROID,
-    WINDOWS,
-    MACOS,
-    LINUX
 }

@@ -1,4 +1,6 @@
-package zed.rainxch.githubstore.feature.home.data.repository
+package zed.rainxch.githubstore.core.domain
+
+import zed.rainxch.githubstore.core.domain.model.PlatformType
 
 class AndroidPlatform : Platform {
     override val type: PlatformType

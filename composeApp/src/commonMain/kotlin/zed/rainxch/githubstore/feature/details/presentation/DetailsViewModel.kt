@@ -15,13 +15,13 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
 import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
+import zed.rainxch.githubstore.core.domain.getPlatform
 import zed.rainxch.githubstore.core.domain.model.GithubAsset
+import zed.rainxch.githubstore.core.domain.model.PlatformType
 import zed.rainxch.githubstore.core.presentation.utils.openBrowser
 import zed.rainxch.githubstore.feature.details.data.Downloader
 import zed.rainxch.githubstore.feature.details.data.Installer
 import zed.rainxch.githubstore.feature.details.domain.repository.DetailsRepository
-import zed.rainxch.githubstore.feature.home.data.repository.PlatformType
-import zed.rainxch.githubstore.feature.home.data.repository.getPlatform
 import kotlin.time.Clock.System
 import kotlin.time.ExperimentalTime
 

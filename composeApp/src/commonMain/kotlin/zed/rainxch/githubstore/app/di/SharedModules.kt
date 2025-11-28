@@ -7,6 +7,7 @@ import org.koin.dsl.module
 import zed.rainxch.githubstore.MainViewModel
 import zed.rainxch.githubstore.core.data.DefaultTokenDataSource
 import zed.rainxch.githubstore.core.data.TokenDataSource
+import zed.rainxch.githubstore.core.domain.getPlatform
 import zed.rainxch.githubstore.network.buildAuthedGitHubHttpClient
 import zed.rainxch.githubstore.feature.auth.data.repository.AuthRepositoryImpl
 import zed.rainxch.githubstore.feature.auth.domain.*
@@ -18,7 +19,6 @@ import zed.rainxch.githubstore.feature.details.presentation.DetailsViewModel
 import zed.rainxch.githubstore.feature.details.data.Downloader
 import zed.rainxch.githubstore.feature.details.data.Installer
 import zed.rainxch.githubstore.feature.home.data.repository.HomeRepositoryImpl
-import zed.rainxch.githubstore.feature.home.data.repository.getPlatform
 import zed.rainxch.githubstore.feature.home.domain.repository.HomeRepository
 import zed.rainxch.githubstore.feature.home.presentation.HomeViewModel
 import zed.rainxch.githubstore.feature.search.data.repository.SearchRepositoryImpl
