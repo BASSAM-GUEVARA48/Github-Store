@@ -23,7 +23,6 @@ actual val platformModule: Module = module {
     single<Installer> {
         val platform = getPlatform()
         DesktopInstaller(
-            files = get(),
             platform = platform.type
         )
     }

@@ -1,5 +1,6 @@
 package zed.rainxch.githubstore.feature.details.data
 
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import zed.rainxch.githubstore.feature.home.data.repository.PlatformType
@@ -8,7 +9,6 @@ import java.io.File
 import java.io.IOException
 
 class DesktopInstaller(
-    private val files: FileLocationsProvider,
     private val platform: PlatformType
 ) : Installer {
 
@@ -140,45 +140,77 @@ class DesktopInstaller(
     }
 
     private fun installAppImage(file: File) {
+        Logger.d { "Installing AppImage: ${file.absolutePath}" }
+
         // Get Desktop directory
         val desktopDir = getDesktopDirectory()
+        Logger.d { "Desktop directory: ${desktopDir.absolutePath}" }
+        Logger.d { "Desktop exists: ${desktopDir.exists()}, isDirectory: ${desktopDir.isDirectory}, canWrite: ${desktopDir.canWrite()}" }
 
         // Copy file to desktop with its original name
         val destinationFile = File(desktopDir, file.name)
 
         // If file already exists on desktop, add a number suffix
         val finalDestination = if (destinationFile.exists()) {
+            Logger.d { "File already exists, generating unique name" }
             generateUniqueFileName(desktopDir, file.name)
         } else {
             destinationFile
         }
 
+        Logger.d { "Final destination: ${finalDestination.absolutePath}" }
+
         try {
             // Copy the file
+            Logger.d { "Copying file..." }
             file.copyTo(finalDestination, overwrite = false)
+            Logger.d { "Copy successful, file size: ${finalDestination.length()} bytes" }
 
             // Make it executable
-            finalDestination.setExecutable(true, false)
+            val executableSet = finalDestination.setExecutable(true, false)
+            Logger.d { "Set executable: $executableSet" }
+
+            // Verify the file exists
+            if (!finalDestination.exists()) {
+                throw IllegalStateException("File was copied but doesn't exist at destination")
+            }
 
             // Optionally, try to open the desktop folder to show the file
             try {
+                Logger.d { "Attempting to open desktop folder..." }
                 if (Desktop.isDesktopSupported()) {
                     Desktop.getDesktop().open(desktopDir)
+                    Logger.d { "Desktop folder opened" }
+                } else {
+                    Logger.w { "Desktop not supported, trying xdg-open" }
+                    ProcessBuilder("xdg-open", desktopDir.absolutePath).start()
                 }
             } catch (e: Exception) {
-                // Ignore if we can't open the folder
+                Logger.w { "Could not open desktop folder: ${e.message}" }
+                // Not a critical error, just log it
             }
+
+            Logger.d { "AppImage installation completed successfully" }
         } catch (e: IOException) {
+            Logger.e { "Failed to copy AppImage: ${e.message}" }
+            e.printStackTrace()
             throw IllegalStateException(
                 "Failed to copy AppImage to desktop: ${e.message}. " +
+                        "Desktop path: ${desktopDir.absolutePath}. " +
                         "Please ensure you have write permissions to your Desktop folder.",
                 e
             )
         } catch (e: SecurityException) {
+            Logger.e { "Security exception: ${e.message}" }
+            e.printStackTrace()
             throw IllegalStateException(
                 "Security restrictions prevent copying AppImage to desktop.",
                 e
             )
+        } catch (e: Exception) {
+            Logger.e { "Unexpected error: ${e.message}" }
+            e.printStackTrace()
+            throw IllegalStateException("Failed to install AppImage: ${e.message}", e)
         }
     }
 
