@@ -145,42 +145,35 @@ dependencies {
 compose.desktop {
     application {
         mainClass = "zed.rainxch.githubstore.MainKt"
-
         nativeDistributions {
-            packageName = "Github Store"
+            packageName = "github-store"
             packageVersion = "1.0.0"
-
             vendor = "rainxchzed"
-
             includeAllModules = true
-
             targetFormats(
                 TargetFormat.Dmg,
                 TargetFormat.Pkg,
-
                 TargetFormat.Exe,
                 TargetFormat.Msi,
-
                 TargetFormat.Deb,
                 TargetFormat.Rpm,
             )
-
             windows {
                 iconFile.set(project.file("logo/app_icon.ico"))
                 menuGroup = "Github Store"
                 shortcut = true
                 perUserInstall = true
             }
-
             macOS {
                 iconFile.set(project.file("logo/app_icon.icns"))
                 bundleID = "zed.rainxch.githubstore"
             }
-
             linux {
                 iconFile.set(project.file("logo/app_icon.png"))
-                appRelease = "Github Store"
+                appRelease = "1"
                 debPackageVersion = "1.0.0"
+                menuGroup = "Development"
+                appCategory = "Development"
             }
         }
     }
