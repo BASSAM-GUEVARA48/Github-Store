@@ -5,6 +5,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import zed.rainxch.githubstore.core.domain.model.PlatformType
 import java.awt.Desktop
+import java.awt.Toolkit
+import java.awt.datatransfer.StringSelection
 import java.io.File
 import java.io.IOException
 
@@ -205,86 +207,198 @@ class DesktopInstaller(
     private fun openTerminalForDebInstall(filePath: String) {
         Logger.d { "Opening terminal for DEB installation" }
 
-        val terminals = listOf(
-            listOf(
-                "gnome-terminal",
-                "--",
-                "bash",
-                "-c",
-                "echo 'Installing $filePath...'; sudo dpkg -i '$filePath' && sudo apt-get install -f -y; echo ''; echo 'Installation complete. Press Enter to close...'; read"
-            ),
-            listOf(
-                "konsole",
-                "-e",
-                "bash",
-                "-c",
-                "echo 'Installing $filePath...'; sudo dpkg -i '$filePath' && sudo apt-get install -f -y; echo ''; echo 'Installation complete. Press Enter to close...'; read"
-            ),
-            listOf(
-                "xterm",
-                "-e",
-                "bash",
-                "-c",
-                "echo 'Installing $filePath...'; sudo dpkg -i '$filePath' && sudo apt-get install -f -y; echo ''; echo 'Installation complete. Press Enter to close...'; read"
-            ),
-            listOf(
-                "xfce4-terminal",
-                "-e",
-                "bash -c \"echo 'Installing $filePath...'; sudo dpkg -i '$filePath' && sudo apt-get install -f -y; echo ''; echo 'Installation complete. Press Enter to close...'; read\""
-            )
-        )
+        // First, try to detect available terminals
+        val availableTerminals = detectAvailableTerminals()
 
-        for (terminalCmd in terminals) {
+        if (availableTerminals.isEmpty()) {
+            // No terminal found - try graphical notification or fallback
+            Logger.e { "No terminal emulator found on system" }
+
+            // Try to show a notification with instructions
+            tryShowNotification(
+                "Installation Required",
+                "Please install manually: sudo dpkg -i '$filePath' && sudo apt-get install -f -y"
+            )
+
+            // Try to copy command to clipboard
+            tryCopyToClipboard("sudo dpkg -i '$filePath' && sudo apt-get install -f -y")
+
+            throw IOException(
+                "No terminal emulator found. Please install manually:\n" +
+                        "sudo dpkg -i '$filePath' && sudo apt-get install -f -y"
+            )
+        }
+
+        val command = "echo 'Installing DEB package...'; sudo dpkg -i '$filePath' && sudo apt-get install -f -y; echo ''; echo 'Installation complete. Press Enter to close...'; read"
+
+        for (terminal in availableTerminals) {
             try {
-                Logger.d { "Trying terminal: ${terminalCmd[0]}" }
-                ProcessBuilder(terminalCmd).start()
+                Logger.d { "Trying terminal: ${terminal.name}" }
+                val processBuilder = when (terminal) {
+                    Terminal.GNOME_TERMINAL -> ProcessBuilder(
+                        "gnome-terminal", "--", "bash", "-c", command
+                    )
+                    Terminal.KONSOLE -> ProcessBuilder(
+                        "konsole", "-e", "bash", "-c", command
+                    )
+                    Terminal.XTERM -> ProcessBuilder(
+                        "xterm", "-e", "bash", "-c", command
+                    )
+                    Terminal.XFCE4_TERMINAL -> ProcessBuilder(
+                        "xfce4-terminal", "-e", "bash -c \"$command\""
+                    )
+                    Terminal.ALACRITTY -> ProcessBuilder(
+                        "alacritty", "-e", "bash", "-c", command
+                    )
+                    Terminal.KITTY -> ProcessBuilder(
+                        "kitty", "bash", "-c", command
+                    )
+                    Terminal.TILIX -> ProcessBuilder(
+                        "tilix", "-e", "bash -c \"$command\""
+                    )
+                    Terminal.MATE_TERMINAL -> ProcessBuilder(
+                        "mate-terminal", "-e", "bash -c \"$command\""
+                    )
+                }
+
+                processBuilder.start()
+                Logger.d { "Terminal opened successfully: ${terminal.name}" }
                 return
             } catch (e: IOException) {
-                Logger.w { "Terminal not available: ${terminalCmd[0]}" }
+                Logger.w { "Failed to open ${terminal.name}: ${e.message}" }
             }
         }
 
-        throw IOException("Could not find a terminal emulator to run package installation")
+        throw IOException("Could not open any terminal emulator")
     }
 
     private fun openTerminalForRpmInstall(filePath: String) {
         Logger.d { "Opening terminal for RPM installation" }
 
-        val terminals = listOf(
-            listOf(
-                "gnome-terminal",
-                "--",
-                "bash",
-                "-c",
-                "echo 'Installing $filePath...'; sudo dnf install -y '$filePath' || sudo yum install -y '$filePath' || sudo rpm -i '$filePath'; echo ''; echo 'Installation complete. Press Enter to close...'; read"
-            ),
-            listOf(
-                "konsole",
-                "-e",
-                "bash",
-                "-c",
-                "echo 'Installing $filePath...'; sudo dnf install -y '$filePath' || sudo yum install -y '$filePath' || sudo rpm -i '$filePath'; echo ''; echo 'Installation complete. Press Enter to close...'; read"
-            ),
-            listOf(
-                "xterm",
-                "-e",
-                "bash",
-                "-c",
-                "echo 'Installing $filePath...'; sudo dnf install -y '$filePath' || sudo yum install -y '$filePath' || sudo rpm -i '$filePath'; echo ''; echo 'Installation complete. Press Enter to close...'; read"
-            )
-        )
+        val availableTerminals = detectAvailableTerminals()
 
-        for (terminalCmd in terminals) {
+        if (availableTerminals.isEmpty()) {
+            Logger.e { "No terminal emulator found on system" }
+
+            tryShowNotification(
+                "Installation Required",
+                "Please install manually: sudo dnf install -y '$filePath'"
+            )
+
+            tryCopyToClipboard("sudo dnf install -y '$filePath'")
+
+            throw IOException(
+                "No terminal emulator found. Please install manually:\n" +
+                        "sudo dnf install -y '$filePath'"
+            )
+        }
+
+        val command = "echo 'Installing RPM package...'; sudo dnf install -y '$filePath' || sudo yum install -y '$filePath' || sudo rpm -i '$filePath'; echo ''; echo 'Installation complete. Press Enter to close...'; read"
+
+        for (terminal in availableTerminals) {
             try {
-                Logger.d { "Trying terminal: ${terminalCmd[0]}" }
-                ProcessBuilder(terminalCmd).start()
+                Logger.d { "Trying terminal: ${terminal.name}" }
+                val processBuilder = when (terminal) {
+                    Terminal.GNOME_TERMINAL -> ProcessBuilder(
+                        "gnome-terminal", "--", "bash", "-c", command
+                    )
+                    Terminal.KONSOLE -> ProcessBuilder(
+                        "konsole", "-e", "bash", "-c", command
+                    )
+                    Terminal.XTERM -> ProcessBuilder(
+                        "xterm", "-e", "bash", "-c", command
+                    )
+                    Terminal.XFCE4_TERMINAL -> ProcessBuilder(
+                        "xfce4-terminal", "-e", "bash -c \"$command\""
+                    )
+                    Terminal.ALACRITTY -> ProcessBuilder(
+                        "alacritty", "-e", "bash", "-c", command
+                    )
+                    Terminal.KITTY -> ProcessBuilder(
+                        "kitty", "bash", "-c", command
+                    )
+                    Terminal.TILIX -> ProcessBuilder(
+                        "tilix", "-e", "bash -c \"$command\""
+                    )
+                    Terminal.MATE_TERMINAL -> ProcessBuilder(
+                        "mate-terminal", "-e", "bash -c \"$command\""
+                    )
+                }
+
+                processBuilder.start()
+                Logger.d { "Terminal opened successfully: ${terminal.name}" }
                 return
             } catch (e: IOException) {
-                Logger.w { "Terminal not available: ${terminalCmd[0]}" }
+                Logger.w { "Failed to open ${terminal.name}: ${e.message}" }
             }
         }
 
-        throw IOException("Could not find a terminal emulator to run package installation")
+        throw IOException("Could not open any terminal emulator")
+    }
+
+    private enum class Terminal {
+        GNOME_TERMINAL,
+        KONSOLE,
+        XTERM,
+        XFCE4_TERMINAL,
+        ALACRITTY,
+        KITTY,
+        TILIX,
+        MATE_TERMINAL
+    }
+
+    private fun detectAvailableTerminals(): List<Terminal> {
+        val terminals = mutableListOf<Terminal>()
+
+        val terminalCommands = mapOf(
+            Terminal.GNOME_TERMINAL to "gnome-terminal",
+            Terminal.KONSOLE to "konsole",
+            Terminal.XTERM to "xterm",
+            Terminal.XFCE4_TERMINAL to "xfce4-terminal",
+            Terminal.ALACRITTY to "alacritty",
+            Terminal.KITTY to "kitty",
+            Terminal.TILIX to "tilix",
+            Terminal.MATE_TERMINAL to "mate-terminal"
+        )
+
+        for ((terminal, command) in terminalCommands) {
+            try {
+                val process = ProcessBuilder("which", command).start()
+                val exitCode = process.waitFor()
+                if (exitCode == 0) {
+                    terminals.add(terminal)
+                    Logger.d { "Found terminal: $command" }
+                }
+            } catch (e: Exception) {
+                // Terminal not available
+            }
+        }
+
+        return terminals
+    }
+
+    private fun tryShowNotification(title: String, message: String) {
+        try {
+            ProcessBuilder(
+                "notify-send",
+                title,
+                message,
+                "-u", "critical",
+                "-t", "10000"
+            ).start()
+        } catch (e: Exception) {
+            Logger.w { "Could not show notification: ${e.message}" }
+        }
+    }
+
+    private fun tryCopyToClipboard(text: String) {
+        try {
+            val clipboard = Toolkit.getDefaultToolkit().systemClipboard
+            clipboard.setContents(StringSelection(text), null)
+            Logger.d { "Command copied to clipboard" }
+        } catch (e: Exception) {
+            Logger.w { "Could not copy to clipboard: ${e.message}" }
+        }
     }
 
 
