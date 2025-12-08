@@ -6,6 +6,10 @@ import org.koin.core.module.Module
 import org.koin.dsl.module
 import zed.rainxch.githubstore.core.data.local.data_store.createDataStore
 import zed.rainxch.githubstore.core.domain.getPlatform
+import zed.rainxch.githubstore.core.presentation.utils.BrowserHelper
+import zed.rainxch.githubstore.core.presentation.utils.ClipboardHelper
+import zed.rainxch.githubstore.core.presentation.utils.JvmBrowserHelper
+import zed.rainxch.githubstore.core.presentation.utils.JvmClipboardHelper
 import zed.rainxch.githubstore.feature.auth.data.DesktopTokenStore
 import zed.rainxch.githubstore.feature.auth.data.TokenStore
 import zed.rainxch.githubstore.feature.details.data.Downloader
@@ -39,6 +43,14 @@ actual val platformModule: Module = module {
 
     single<DataStore<Preferences>> {
         createDataStore()
+    }
+
+    single<ClipboardHelper> {
+        JvmClipboardHelper()
+    }
+
+    single<BrowserHelper> {
+        JvmBrowserHelper()
     }
 
     single<TokenStore> {

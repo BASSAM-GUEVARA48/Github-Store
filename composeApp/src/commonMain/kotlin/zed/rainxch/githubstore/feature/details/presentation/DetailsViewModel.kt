@@ -20,7 +20,7 @@ import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
 import zed.rainxch.githubstore.core.domain.Platform
 import zed.rainxch.githubstore.core.domain.model.PlatformType
-import zed.rainxch.githubstore.core.presentation.utils.openBrowser
+import zed.rainxch.githubstore.core.presentation.utils.BrowserHelper
 import zed.rainxch.githubstore.feature.details.data.Downloader
 import zed.rainxch.githubstore.feature.details.data.Installer
 import zed.rainxch.githubstore.feature.details.domain.repository.DetailsRepository
@@ -32,7 +32,8 @@ class DetailsViewModel(
     private val detailsRepository: DetailsRepository,
     private val downloader: Downloader,
     private val installer: Installer,
-    private val platform: Platform
+    private val platform: Platform,
+    private val helper: BrowserHelper
 ) : ViewModel() {
 
     private var hasLoadedInitialData = false
@@ -181,11 +182,15 @@ class DetailsViewModel(
             }
 
             DetailsAction.OpenRepoInBrowser -> {
-                _state.value.repository?.htmlUrl?.let { openBrowser(it) }
+                _state.value.repository?.htmlUrl?.let {
+                    helper.openUrl(url = it)
+                }
             }
 
             DetailsAction.OpenAuthorInBrowser -> {
-                _state.value.userProfile?.htmlUrl?.let { openBrowser(it) }
+                _state.value.userProfile?.htmlUrl?.let {
+                    helper.openUrl(url = it)
+                }
             }
 
             DetailsAction.OpenInObtainium -> {

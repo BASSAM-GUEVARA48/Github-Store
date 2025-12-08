@@ -5,8 +5,8 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 import zed.rainxch.githubstore.MainViewModel
-import zed.rainxch.githubstore.core.data.DefaultTokenDataSource
-import zed.rainxch.githubstore.core.data.TokenDataSource
+import zed.rainxch.githubstore.core.data.data_source.DefaultTokenDataSource
+import zed.rainxch.githubstore.core.data.data_source.TokenDataSource
 import zed.rainxch.githubstore.core.data.repository.ThemesRepositoryImpl
 import zed.rainxch.githubstore.core.domain.getPlatform
 import zed.rainxch.githubstore.core.domain.repository.ThemesRepository
@@ -58,7 +58,7 @@ val authModule: Module = module {
     factory { ObserveAccessTokenUseCase(get()) }
     factory { LogoutUseCase(get()) }
 
-    viewModel { AuthenticationViewModel(get(), get(), get(), get()) }
+    viewModelOf(::AuthenticationViewModel)
 }
 
 val homeModule: Module = module {
@@ -93,7 +93,8 @@ val detailsModule: Module = module {
             detailsRepository = get(),
             downloader = get<Downloader>(),
             installer = get<Installer>(),
-            platform = getPlatform()
+            platform = getPlatform(),
+            helper = get()
         )
     }
 }

@@ -20,11 +20,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import zed.rainxch.githubstore.core.presentation.theme.GithubStoreTheme
-import zed.rainxch.githubstore.core.presentation.utils.openBrowser
 import zed.rainxch.githubstore.feature.settings.presentation.components.sections.about
 import zed.rainxch.githubstore.feature.settings.presentation.components.sections.appearance
 
@@ -41,10 +39,6 @@ fun SettingsRoot(
             when (action) {
                 SettingsAction.OnNavigateBackClick -> {
                     onNavigateBack()
-                }
-
-                SettingsAction.OnHelpClick -> {
-                    openBrowser(url = "https://github.com/rainxchzed/Github-Store/issues")
                 }
 
                 else -> {

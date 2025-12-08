@@ -6,6 +6,10 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.dsl.module
 import zed.rainxch.githubstore.core.data.local.data_store.createDataStore
+import zed.rainxch.githubstore.core.presentation.utils.AndroidBrowserHelper
+import zed.rainxch.githubstore.core.presentation.utils.AndroidClipboardHelper
+import zed.rainxch.githubstore.core.presentation.utils.BrowserHelper
+import zed.rainxch.githubstore.core.presentation.utils.ClipboardHelper
 import zed.rainxch.githubstore.feature.auth.data.AndroidTokenStore
 import zed.rainxch.githubstore.feature.auth.data.TokenStore
 import zed.rainxch.githubstore.feature.details.data.AndroidDownloader
@@ -35,6 +39,14 @@ actual val platformModule: Module = module {
 
     single<DataStore<Preferences>> {
         createDataStore(androidContext())
+    }
+
+    single<BrowserHelper> {
+        AndroidBrowserHelper(androidContext())
+    }
+
+    single<ClipboardHelper> {
+        AndroidClipboardHelper(androidContext())
     }
 
     single<TokenStore> {

@@ -9,8 +9,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import zed.rainxch.githubstore.core.domain.repository.ThemesRepository
+import zed.rainxch.githubstore.core.presentation.utils.BrowserHelper
 
 class SettingsViewModel(
+    private val browserHelper: BrowserHelper,
     private val themesRepository: ThemesRepository
 ) : ViewModel() {
 
@@ -46,17 +48,19 @@ class SettingsViewModel(
     fun onAction(action: SettingsAction) {
         when (action) {
             SettingsAction.OnHelpClick -> {
-                /* Handed in composable */
-            }
-
-            SettingsAction.OnNavigateBackClick -> {
-                /* Handed in composable */
+                browserHelper.openUrl(
+                    url = "https://github.com/rainxchzed/Github-Store/issues"
+                )
             }
 
             is SettingsAction.OnThemeColorSelected -> {
                 viewModelScope.launch {
                     themesRepository.setThemeColor(action.themeColor)
                 }
+            }
+
+            SettingsAction.OnNavigateBackClick -> {
+                /* Handed in composable */
             }
         }
     }

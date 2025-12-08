@@ -9,5 +9,3 @@ interface TokenStore {
 }
 
 expect fun getGithubClientId(): String
-
-expect fun copyToClipboard(label: String, text: String): Boolean

@@ -40,12 +40,10 @@ import githubstore.composeapp.generated.resources.ic_github
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
-import zed.rainxch.githubstore.core.presentation.components.GithubStoreButton
-import zed.rainxch.githubstore.feature.auth.data.copyToClipboard
-import zed.rainxch.githubstore.core.presentation.utils.openBrowser
-import zed.rainxch.githubstore.core.presentation.utils.ObserveAsEvents
-import zed.rainxch.githubstore.core.presentation.theme.GithubStoreTheme
 import zed.rainxch.githubstore.core.domain.model.DeviceStart
+import zed.rainxch.githubstore.core.presentation.components.GithubStoreButton
+import zed.rainxch.githubstore.core.presentation.theme.GithubStoreTheme
+import zed.rainxch.githubstore.core.presentation.utils.ObserveAsEvents
 
 @Composable
 fun AuthenticationRoot(
@@ -56,16 +54,6 @@ fun AuthenticationRoot(
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            is AuthenticationEvents.OpenBrowser -> {
-                openBrowser(
-                    url = event.url,
-                    onError = { info ->
-                        viewModel.onAction(AuthenticationAction.OnInfo(info))
-                    }
-                )
-            }
-
-            is AuthenticationEvents.CopyToClipboard -> copyToClipboard(event.label, event.text)
             AuthenticationEvents.OnNavigateToMain -> {
                 onNavigateToHome()
             }

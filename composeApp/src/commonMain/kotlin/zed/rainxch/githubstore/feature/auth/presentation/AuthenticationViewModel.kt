@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import zed.rainxch.githubstore.core.domain.model.DeviceStart
+import zed.rainxch.githubstore.core.presentation.utils.BrowserHelper
+import zed.rainxch.githubstore.core.presentation.utils.ClipboardHelper
 import zed.rainxch.githubstore.feature.auth.domain.AwaitDeviceTokenUseCase
 import zed.rainxch.githubstore.feature.auth.domain.LogoutUseCase
 import zed.rainxch.githubstore.feature.auth.domain.ObserveAccessTokenUseCase
@@ -25,6 +27,8 @@ class AuthenticationViewModel(
     private val awaitDeviceToken: AwaitDeviceTokenUseCase,
     private val logoutUc: LogoutUseCase,
     observeAccessToken: ObserveAccessTokenUseCase,
+    private val browserHelper: BrowserHelper,
+    private val clipboardHelper: ClipboardHelper,
     private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 ) : ViewModel() {
 
@@ -92,15 +96,15 @@ class AuthenticationViewModel(
                     )
                 }
 
-                _events.trySend(
-                    AuthenticationEvents.CopyToClipboard(
-                        "GitHub Code",
-                        start.userCode
-                    )
+                clipboardHelper.copy(
+                    label = "GitHub Code",
+                    text = start.userCode
                 )
 
                 awaitDeviceToken(start)
+
                 _state.update { it.copy(loginState = AuthLoginState.LoggedIn) }
+
                 _events.trySend(AuthenticationEvents.OnNavigateToMain)
             } catch (_: CancellationException) {
                 _state.update { it.copy(loginState = AuthLoginState.Error("Cancelled")) }
@@ -118,7 +122,8 @@ class AuthenticationViewModel(
 
     private fun openGitHub(start: DeviceStart) {
         val url = start.verificationUriComplete ?: start.verificationUri
-        _events.trySend(AuthenticationEvents.OpenBrowser(url))
+
+        browserHelper.openUrl(url)
     }
 
     private fun copyCode(start: DeviceStart) {
@@ -128,7 +133,11 @@ class AuthenticationViewModel(
                 copied = true
             )
         }
-        _events.trySend(AuthenticationEvents.CopyToClipboard("GitHub Code", start.userCode))
+
+        clipboardHelper.copy(
+            label = "GitHub Code",
+            text = start.userCode
+        )
     }
 
     private fun logout() {

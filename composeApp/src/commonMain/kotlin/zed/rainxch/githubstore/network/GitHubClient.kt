@@ -13,7 +13,7 @@ import io.ktor.client.request.*
 import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import zed.rainxch.githubstore.core.data.TokenDataSource
+import zed.rainxch.githubstore.core.data.data_source.TokenDataSource
 
 /**
  * Build a Ktor client preconfigured for GitHub REST API.

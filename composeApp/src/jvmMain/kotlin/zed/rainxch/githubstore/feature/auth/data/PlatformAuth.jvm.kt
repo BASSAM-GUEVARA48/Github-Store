@@ -7,24 +7,6 @@ import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.util.prefs.Preferences
 
-actual fun getGithubClientId(): String {
-    val fromSys = System.getProperty("GITHUB_CLIENT_ID")?.trim().orEmpty()
-    if (fromSys.isNotEmpty()) return fromSys
-
-    val fromEnv = System.getenv("GITHUB_CLIENT_ID")?.trim().orEmpty()
-    if (fromEnv.isNotEmpty()) return fromEnv
-
-    return BuildConfig.GITHUB_CLIENT_ID
-}
-
-actual fun copyToClipboard(label: String, text: String): Boolean {
-    return try {
-        val clipboard = Toolkit.getDefaultToolkit().systemClipboard
-        clipboard.setContents(StringSelection(text), null)
-        true
-    } catch (_: Throwable) { false }
-}
-
 class DesktopTokenStore : TokenStore {
     private val prefs: Preferences = Preferences.userRoot().node("zed.rainxch.githubstore")
     private val json = Json { ignoreUnknownKeys = true }
@@ -39,4 +21,14 @@ class DesktopTokenStore : TokenStore {
     }
 
     override suspend fun clear() { prefs.remove("token") }
+}
+
+actual fun getGithubClientId(): String {
+    val fromSys = System.getProperty("GITHUB_CLIENT_ID")?.trim().orEmpty()
+    if (fromSys.isNotEmpty()) return fromSys
+
+    val fromEnv = System.getenv("GITHUB_CLIENT_ID")?.trim().orEmpty()
+    if (fromEnv.isNotEmpty()) return fromEnv
+
+    return BuildConfig.GITHUB_CLIENT_ID
 }
