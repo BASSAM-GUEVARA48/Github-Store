@@ -1,5 +1,6 @@
 package zed.rainxch.githubstore.core.data
 
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,10 +27,18 @@ class DefaultTokenDataSource(
     private val _flow = MutableStateFlow<DeviceTokenSuccess?>(null)
     override val tokenFlow: StateFlow<DeviceTokenSuccess?> = _flow
 
+    // Track if initial load is complete
+    private val isInitialized = CompletableDeferred<Unit>()
+
     init {
         scope.launch {
-            val token = tokenStore.load()
-            _flow.value = token
+            try {
+                val token = tokenStore.load()
+                _flow.value = token
+            } finally {
+                // Mark as initialized regardless of success/failure
+                isInitialized.complete(Unit)
+            }
         }
     }
 
@@ -38,7 +47,11 @@ class DefaultTokenDataSource(
         _flow.value = token
     }
 
-    override suspend fun reloadFromStore(): DeviceTokenSuccess? = tokenStore.load()
+    override suspend fun reloadFromStore(): DeviceTokenSuccess? {
+        // Wait for initial load to complete first!
+        isInitialized.await()
+        return _flow.value
+    }
 
     override suspend fun clear() {
         tokenStore.clear()

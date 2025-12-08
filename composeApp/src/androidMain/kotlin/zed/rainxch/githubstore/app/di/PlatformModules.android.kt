@@ -38,6 +38,8 @@ actual val platformModule: Module = module {
     }
 
     single<TokenStore> {
-        AndroidTokenStore()
+        AndroidTokenStore(
+            dataStore = get()
+        )
     }
 }

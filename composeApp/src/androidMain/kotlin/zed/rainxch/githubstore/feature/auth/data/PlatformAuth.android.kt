@@ -9,6 +9,12 @@ import zed.rainxch.githubstore.BuildConfig
 import kotlinx.serialization.json.Json
 import zed.rainxch.githubstore.core.presentation.utils.AppContextHolder
 import androidx.core.content.edit
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.flow.first
 import zed.rainxch.githubstore.core.domain.model.DeviceTokenSuccess
 
 actual fun getGithubClientId(): String = BuildConfig.GITHUB_CLIENT_ID
@@ -19,46 +25,33 @@ actual fun copyToClipboard(label: String, text: String): Boolean {
         val cm = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         cm.setPrimaryClip(ClipData.newPlainText(label, text))
         true
-    } catch (_: Throwable) { false }
+    } catch (_: Throwable) {
+        false
+    }
 }
 
-class AndroidTokenStore : TokenStore {
-    private val ctx: Context get() = AppContextHolder.appContext
-
-    private val prefs by lazy {
-        try {
-            val masterKey = Builder(ctx)
-                .setKeyScheme(KeyScheme.AES256_GCM)
-                .build()
-            EncryptedSharedPreferences.create(
-                ctx,
-                "auth_tokens",
-                masterKey,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            )
-        } catch (_: Throwable) {
-            ctx.getSharedPreferences("auth_tokens", Context.MODE_PRIVATE)
-        }
-    }
-
+class AndroidTokenStore(
+    private val dataStore: DataStore<Preferences>,
+) : TokenStore {
+    private val TOKEN_KEY = stringPreferencesKey("token")
     private val json = Json { ignoreUnknownKeys = true }
 
     override suspend fun save(token: DeviceTokenSuccess) {
-        prefs.edit {
-            putString(
-                "token",
-                json.encodeToString(DeviceTokenSuccess.serializer(), token)
-            )
+        val jsonString = json.encodeToString(DeviceTokenSuccess.serializer(), token)
+        dataStore.edit { preferences ->
+            preferences[TOKEN_KEY] = jsonString
         }
     }
 
     override suspend fun load(): DeviceTokenSuccess? {
-        val raw = prefs.getString("token", null) ?: return null
-        return runCatching { json.decodeFromString(DeviceTokenSuccess.serializer(), raw) }.getOrNull()
+        return runCatching {
+            val preferences = dataStore.data.first()
+            val raw = preferences[TOKEN_KEY] ?: return null
+            json.decodeFromString(DeviceTokenSuccess.serializer(), raw)
+        }.getOrNull()
     }
 
     override suspend fun clear() {
-        prefs.edit { remove("token") }
+        dataStore.edit { it.remove(TOKEN_KEY) }
     }
 }
