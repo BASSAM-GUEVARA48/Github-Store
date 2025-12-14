@@ -86,7 +86,7 @@ class AuthenticationViewModel(
     private fun startLogin() {
         scope.launch {
             try {
-                val start = startDeviceFlow("repo")
+                val start = startDeviceFlow()
                 _state.update {
                     it.copy(
                         loginState = AuthLoginState.DevicePrompt(start),
