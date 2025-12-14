@@ -6,7 +6,7 @@ import zed.rainxch.githubstore.core.domain.model.DeviceTokenSuccess
 import zed.rainxch.githubstore.feature.auth.domain.repository.AuthRepository
 
 class StartDeviceFlowUseCase(private val repo: AuthRepository) {
-    suspend operator fun invoke(scope: String): DeviceStart = repo.startDeviceFlow(scope)
+    suspend operator fun invoke(): DeviceStart = repo.startDeviceFlow()
 }
 
 class AwaitDeviceTokenUseCase(private val repo: AuthRepository) {

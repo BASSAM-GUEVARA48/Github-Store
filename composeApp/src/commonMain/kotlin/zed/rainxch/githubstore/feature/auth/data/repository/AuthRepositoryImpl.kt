@@ -16,7 +16,6 @@ import zed.rainxch.githubstore.feature.auth.domain.repository.AuthRepository
 
 class AuthRepositoryImpl(
     private val tokenDataSource: TokenDataSource,
-    private val scopeText: String = DEFAULT_SCOPE
 ) : AuthRepository {
 
     override val accessTokenFlow: Flow<String?>
@@ -28,7 +27,7 @@ class AuthRepositoryImpl(
     override suspend fun isAuthenticated(): Boolean =
         tokenDataSource.current() != null
 
-    override suspend fun startDeviceFlow(scope: String): DeviceStart =
+    override suspend fun startDeviceFlow(): DeviceStart =
         withContext(Dispatchers.Default) {
             val clientId = getGithubClientId()
             require(clientId.isNotBlank()) {
@@ -36,7 +35,7 @@ class AuthRepositoryImpl(
             }
 
             try {
-                val result = GitHubAuthApi.startDeviceFlow(clientId, scope.ifBlank { scopeText })
+                val result = GitHubAuthApi.startDeviceFlow(clientId)
                 Logger.d { "✅ Device flow started. User code: ${result.userCode}" }
                 result
             } catch (e: Exception) {
@@ -177,9 +176,5 @@ class AuthRepositoryImpl(
             }
         }
         return block()
-    }
-
-    companion object {
-        const val DEFAULT_SCOPE = "repo"
     }
 }

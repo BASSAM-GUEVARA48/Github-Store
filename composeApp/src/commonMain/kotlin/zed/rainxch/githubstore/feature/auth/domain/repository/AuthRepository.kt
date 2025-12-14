@@ -8,7 +8,7 @@ interface AuthRepository {
     val accessTokenFlow: Flow<String?>
     val isAuthenticatedFlow: Flow<Boolean>
 
-    suspend fun startDeviceFlow(scope: String): DeviceStart
+    suspend fun startDeviceFlow(): DeviceStart
 
     suspend fun awaitDeviceToken(start: DeviceStart): DeviceTokenSuccess
 
