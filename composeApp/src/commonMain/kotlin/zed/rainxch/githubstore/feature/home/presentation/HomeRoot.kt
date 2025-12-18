@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CircularProgressIndicator
@@ -62,6 +63,7 @@ import zed.rainxch.githubstore.feature.home.presentation.model.HomeCategory
 fun HomeRoot(
     onNavigateToSettings: () -> Unit,
     onNavigateToSearch: () -> Unit,
+    onNavigateToApps: () -> Unit,
     onNavigateToDetails: (zed.rainxch.githubstore.core.domain.model.GithubRepoSummary) -> Unit,
     viewModel: HomeViewModel = koinViewModel()
 ) {
@@ -77,6 +79,10 @@ fun HomeRoot(
 
                 HomeAction.OnSettingsClick -> {
                     onNavigateToSettings()
+                }
+
+                HomeAction.OnAppsClick -> {
+                    onNavigateToApps()
                 }
 
                 is HomeAction.OnRepositoryClick -> onNavigateToDetails(action.repo)
@@ -159,6 +165,22 @@ fun HomeScreen(
                             Icon(
                                 imageVector = Icons.Default.Search,
                                 contentDescription = "Search",
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+
+                        IconButton(
+                            shapes = IconButtonDefaults.shapes(),
+                            onClick = {
+                                onAction(HomeAction.OnAppsClick)
+                            },
+                            colors = IconButtonDefaults.iconButtonColors(
+                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Apps,
+                                contentDescription = "Apps",
                                 modifier = Modifier.size(24.dp)
                             )
                         }

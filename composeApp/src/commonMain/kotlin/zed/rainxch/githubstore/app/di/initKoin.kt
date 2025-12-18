@@ -14,6 +14,7 @@ fun initKoin(config: KoinAppDeclaration? = null) {
             searchModule,
             detailsModule,
             settingsModule,
+            appsModule
         )
     }
 }

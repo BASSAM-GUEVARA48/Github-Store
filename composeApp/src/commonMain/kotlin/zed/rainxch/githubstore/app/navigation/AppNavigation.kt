@@ -6,27 +6,18 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.saveable.rememberSerializable
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.snapshots.toInt
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import androidx.savedstate.compose.serialization.serializers.SnapshotStateListSerializer
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
-import zed.rainxch.githubstore.MainAction
-import zed.rainxch.githubstore.MainState
-import zed.rainxch.githubstore.app.app_state.components.RateLimitDialog
+import zed.rainxch.githubstore.feature.apps.presentation.AppsRoot
 import zed.rainxch.githubstore.feature.auth.presentation.AuthenticationRoot
 import zed.rainxch.githubstore.feature.details.presentation.DetailsRoot
 import zed.rainxch.githubstore.feature.home.presentation.HomeRoot
@@ -51,6 +42,9 @@ fun AppNavigation(
                     },
                     onNavigateToSettings = {
                         navBackStack.add(GithubStoreGraph.SettingsScreen)
+                    },
+                    onNavigateToApps = {
+                        navBackStack.add(GithubStoreGraph.AppsScreen)
                     },
                     onNavigateToDetails = { repo ->
                         navBackStack.add(
@@ -108,6 +102,21 @@ fun AppNavigation(
                 SettingsRoot(
                     onNavigateBack = {
                         navBackStack.removeLastOrNull()
+                    }
+                )
+            }
+
+            entry<GithubStoreGraph.AppsScreen> {
+                AppsRoot(
+                    onNavigateBack = {
+                        navBackStack.removeLastOrNull()
+                    },
+                    onNavigateToRepo = { repoId ->
+                        navBackStack.add(
+                            GithubStoreGraph.DetailsScreen(
+                                repositoryId = repoId.toInt()
+                            )
+                        )
                     }
                 )
             }

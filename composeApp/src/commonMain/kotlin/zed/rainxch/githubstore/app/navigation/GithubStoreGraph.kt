@@ -21,4 +21,7 @@ sealed interface GithubStoreGraph: NavKey {
 
     @Serializable
     data object SettingsScreen : GithubStoreGraph
+
+    @Serializable
+    data object AppsScreen : GithubStoreGraph
 }

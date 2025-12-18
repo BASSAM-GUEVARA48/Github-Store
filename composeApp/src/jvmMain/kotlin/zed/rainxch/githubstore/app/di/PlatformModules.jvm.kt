@@ -11,8 +11,10 @@ import zed.rainxch.githubstore.core.data.local.data_store.createDataStore
 import zed.rainxch.githubstore.core.data.local.db.AppDatabase
 import zed.rainxch.githubstore.core.data.local.db.initDatabase
 import zed.rainxch.githubstore.core.domain.getPlatform
+import zed.rainxch.githubstore.core.presentation.utils.AppLauncher
 import zed.rainxch.githubstore.core.presentation.utils.BrowserHelper
 import zed.rainxch.githubstore.core.presentation.utils.ClipboardHelper
+import zed.rainxch.githubstore.core.presentation.utils.DesktopAppLauncher
 import zed.rainxch.githubstore.core.presentation.utils.JvmBrowserHelper
 import zed.rainxch.githubstore.core.presentation.utils.JvmClipboardHelper
 import zed.rainxch.githubstore.feature.auth.data.DesktopTokenStore
@@ -69,5 +71,10 @@ actual val platformModule: Module = module {
 
     single<PackageMonitor> {
         DesktopPackageMonitor()
+    }
+
+    single<AppLauncher> {
+        val platform = getPlatform()
+        DesktopAppLauncher(platform)
     }
 }

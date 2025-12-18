@@ -11,10 +11,13 @@ import zed.rainxch.githubstore.core.data.PackageMonitor
 import zed.rainxch.githubstore.core.data.local.data_store.createDataStore
 import zed.rainxch.githubstore.core.data.local.db.AppDatabase
 import zed.rainxch.githubstore.core.data.local.db.initDatabase
+import zed.rainxch.githubstore.core.presentation.utils.AndroidAppLauncher
 import zed.rainxch.githubstore.core.presentation.utils.AndroidBrowserHelper
 import zed.rainxch.githubstore.core.presentation.utils.AndroidClipboardHelper
+import zed.rainxch.githubstore.core.presentation.utils.AppLauncher
 import zed.rainxch.githubstore.core.presentation.utils.BrowserHelper
 import zed.rainxch.githubstore.core.presentation.utils.ClipboardHelper
+import zed.rainxch.githubstore.feature.apps.domain.repository.AppsRepository
 import zed.rainxch.githubstore.feature.auth.data.AndroidTokenStore
 import zed.rainxch.githubstore.feature.auth.data.TokenStore
 import zed.rainxch.githubstore.feature.details.data.AndroidDownloader
@@ -67,5 +70,9 @@ actual val platformModule: Module = module {
 
     single<PackageMonitor> {
         AndroidPackageMonitor(androidContext())
+    }
+
+    single<AppLauncher> {
+        AndroidAppLauncher(androidContext())
     }
 }

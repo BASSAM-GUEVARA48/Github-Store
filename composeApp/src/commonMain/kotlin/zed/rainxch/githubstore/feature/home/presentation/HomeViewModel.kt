@@ -170,6 +170,10 @@ class HomeViewModel(
             HomeAction.OnSettingsClick -> {
                 /* Handled in composable */
             }
+
+            HomeAction.OnAppsClick -> {
+                /* Handled in composable */
+            }
         }
     }
 
