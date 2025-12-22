@@ -138,8 +138,6 @@ class HomeViewModel(
 
                             currentState.copy(
                                 repos = uniqueList,
-                                isLoading = false,
-                                isLoadingMore = false,
                                 hasMorePages = paginatedRepos.hasMore,
                                 errorMessage = if (uniqueList.isEmpty() && !paginatedRepos.hasMore) {
                                     "No repositories found"

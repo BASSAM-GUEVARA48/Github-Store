@@ -109,9 +109,11 @@ fun SearchScreen(
             val totalItems = layoutInfo.totalItemsCount
             val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()
 
+            val threshold = (totalItems * 0.8f).toInt()
+
             totalItems > 0 &&
                     lastVisibleItem != null &&
-                    lastVisibleItem.index >= (totalItems - 5) &&
+                    lastVisibleItem.index >= threshold &&
                     !state.isLoadingMore &&
                     !state.isLoading &&
                     state.hasMorePages
@@ -244,7 +246,7 @@ fun SearchScreen(
 
             if (state.totalCount != null) {
                 Text(
-                    text = "About ${state.totalCount} results",
+                    text = "${state.totalCount} results were found",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.outline,
                     modifier = Modifier
@@ -337,19 +339,17 @@ fun SearchScreen(
                             )
                         }
 
-                        if (state.hasMorePages) {
-                            item {
-                                if (state.isLoadingMore) {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(16.dp),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        CircularProgressIndicator(
-                                            modifier = Modifier.size(24.dp)
-                                        )
-                                    }
+                        item {
+                            if (state.isLoadingMore) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(24.dp)
+                                    )
                                 }
                             }
                         }
