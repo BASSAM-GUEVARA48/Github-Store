@@ -33,7 +33,6 @@ fun RowScope.HomeFilterChips(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
             )
         },
         shape = CircleShape,
