@@ -25,7 +25,7 @@ GitHub Store는 GitHub 릴리스를 위한 크로스플랫폼 “Play Store”�
 </p>
 
 <p align="center">
-  <img src="screenshots/banner.png" />
+  <img src="../screenshots/banner.png" />
 </p>
 
 ---

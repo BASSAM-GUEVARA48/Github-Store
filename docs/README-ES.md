@@ -25,7 +25,7 @@ instalarlos, seguirlos y actualizarlos desde un solo lugar.
 </p>
 
 <p align="center">
-  <img src="screenshots/banner.png" />
+  <img src="../screenshots/banner.png" />
 </p>
 
 ---

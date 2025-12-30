@@ -25,7 +25,7 @@ GitHub Store は、GitHub のリリース向けのクロスプラットフォー
 </p>
 
 <p align="center">
-  <img src="screenshots/banner.png" />
+  <img src="../screenshots/banner.png" />
 </p>
 
 ---

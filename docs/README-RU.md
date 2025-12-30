@@ -25,7 +25,7 @@ GitHub Store — это кроссплатформенный «Play Store» дл
 </p>
 
 <p align="center">
-  <img src="screenshots/banner.png" />
+  <img src="../screenshots/banner.png" />
 </p>
 
 ---

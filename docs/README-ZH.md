@@ -25,7 +25,7 @@ GitHub Store 是一个面向 GitHub Releases 的跨平台 “Play Store”。
 </p>
 
 <p align="center">
-  <img src="screenshots/banner.png" />
+  <img src="../screenshots/banner.png" />
 </p>
 
 ---
