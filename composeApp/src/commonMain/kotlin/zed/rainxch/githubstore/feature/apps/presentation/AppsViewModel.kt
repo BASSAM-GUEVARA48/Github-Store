@@ -81,7 +81,7 @@ class AppsViewModel(
                             downloadProgress = existing?.downloadProgress,
                             error = existing?.error
                         )
-                    }
+                    }.sortedBy { it.installedApp.isUpdateAvailable }
 
                     _state.update {
                         it.copy(
