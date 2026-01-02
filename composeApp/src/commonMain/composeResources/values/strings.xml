@@ -244,5 +244,5 @@
     <string name="rate_limit_close">Close</string>
 
     <string name="system_font">System font</string>
-    <string name="system_font_description">Match your device\'s font for better readability</string>
+    <string name="system_font_description">Match your device's font for better readability</string>
 </resources>
